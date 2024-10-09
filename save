@@ -1,0 +1,13 @@
+#!/bin/sh
+
+OLD_NAME="sjcam"
+OUTPUT_PATH="/home/deviur/Видео"
+
+# Arguments
+NEW_NAME=$1
+
+# 
+output_name="$(date +%Y%m%d)_${OLD_NAME}_${NEW_NAME}"
+
+mv $OUTPUT_PATH/$OLD_NAME "${OUTPUT_PATH}/${output_name}"
+mkdir $OUTPUT_PATH/$OLD_NAME

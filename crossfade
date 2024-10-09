@@ -22,3 +22,9 @@ ffmpeg -y -i "${FILENAME_ONLY}.${EXT_ONLY}" -i "${FILE_02}" -filter_complex "xfa
 
 # rm "${FILE_01}" "${FILE_02}"
 
+# Beeping
+echo -e "\a"
+sleep 0.3
+echo -e "\a"
+sleep 0.3
+echo -e "\a"

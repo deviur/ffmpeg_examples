@@ -11,7 +11,7 @@ EXT_ONLY="${FILENAME_EXT#*.}" # Or hardcode it like "mp4"
 FILENAME_ONLY_PATH="${BASE_PATH}/${FILENAME_ONLY}"
 
 # Deshake video
-ffmpeg -y -i "${FILENAME_ONLY}.${EXT_ONLY}" -vf deshake -af loudnorm "st_${FILENAME_ONLY}.${EXT_ONLY}"
+ffmpeg -y -i "${FILENAME_ONLY}.${EXT_ONLY}" -vf deshake -q:v 0 "st_${FILENAME_ONLY}.${EXT_ONLY}"
 
 # Beeping
 echo -e "\a"

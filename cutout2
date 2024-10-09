@@ -12,10 +12,17 @@ FILENAME_ONLY="${FILENAME_EXT%.*}"
 EXT_ONLY="${FILENAME_EXT#*.}" # Or hardcode it like "mp4"
 FILENAME_ONLY_PATH="${BASE_PATH}/${FILENAME_ONLY}"
 
+# Get last_video
+last_video=$(ls -t1 ${FILENAME_ONLY}-*.${EXT_ONLY} | head -n 1)
+if [ -z "$last_video" ]; then
+   # $var is empty, do what you want
+   last_video="${FILENAME_ONLY}-00.${EXT_ONLY}"
+fi
+
 # Get next_video_name
-last_video=$(ls -t1 ${FILENAME_ONLY}*.mp4 | head -n 1)
 last_video_name="${last_video%.*}"
 next_video_name=$(printf "%s-%02d\n" ${last_video_name%-*} $((${last_video_name##*-}+1)))
+# echo $last_video $last_video_name $next_video_name ${last_video_name%-*} ${last_video_name##*-}
 
 # Cutting
-ffmpeg -i "${FILENAME_ONLY}.${EXT_ONLY}" -map 0 -c copy -ss "$CUT_FROM" -t "$CUT_TO" "${next_video_name}.${EXT_ONLY}"
+ffmpeg -i "${FILENAME_ONLY}.${EXT_ONLY}" -map 0 -c copy -copyinkf -ss "$CUT_FROM" -to "$CUT_TO" "${next_video_name}.${EXT_ONLY}"

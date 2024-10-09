@@ -1,0 +1,9 @@
+mkdir ~/mp4
+cp -fr install ~/mp4
+cp -fr cutout ~/mp4
+cp -fr cut_all ~/mp4
+cp -fr cutout2 ~/mp4
+cp -fr loudnorm ~/mp4
+cp -fr deshake ~/mp4
+cp -fr 2web ~/mp4
+cp -fr save ~/mp4
