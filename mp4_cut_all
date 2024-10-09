@@ -1,0 +1,66 @@
+#!/bin/bash
+
+if [ "$#" -ne 1 ]
+then
+  echo "Incorrect number of arguments"
+  exit 1
+fi
+
+# Arguments
+FILE_RAW=$1
+
+# Prepare variables
+BASE_PATH=$(dirname $(readlink -f $FILE_RAW))
+FILENAME_EXT="$(basename "${FILE_RAW}")"
+FILENAME_ONLY="${FILENAME_EXT%.*}"
+EXT_ONLY="${FILENAME_EXT#*.}" # Or hardcode it like "mp4"
+FILENAME_ONLY_PATH="${BASE_PATH}/${FILENAME_ONLY}"
+
+# echo "start log" > "${FILENAME_ONLY}.log"
+
+
+# Указываем имя файла
+filename="${FILENAME_ONLY}.srt"
+
+search_string=">"
+another_string=" --> "
+replace_string=";"
+
+grep "$search_string" "$filename" | sed "s/$another_string/$replace_string/g" >>  "${FILENAME_ONLY}.log"
+
+# Цикл while для перечисления строк, найденных с помощью grep
+for line in $(grep "$search_string" "$filename" | sed "s/$another_string/$replace_string/g"); do
+
+    echo line=$line >> "${FILENAME_ONLY}.log"
+    line="${line// --> /\;}"
+    IFS=";"
+    # Используем параметрическое расширение для разбивки строки
+    part1="${line%%;*}"  # Первая часть до разделителя
+    part2="${line#*;}"   # Вторая часть после разделител
+    
+
+    # Заменяем запятую на точку
+    start="${part1//,/\.}"
+    end="${part2//,/\.}"
+    
+    # echo $start --- $end  >> "${FILENAME_ONLY}.log"
+
+    # Get last_video
+    last_video=$(ls -t1 ${FILENAME_ONLY}-*.${EXT_ONLY} | head -n 1)
+    if [ -z "$last_video" ]; then
+       # $var is empty, do what you want
+       last_video="${FILENAME_ONLY}-00.${EXT_ONLY}"
+    fi
+
+    # Get next_video_name
+    last_video_name="${last_video%.*}"
+    
+    # Извлекаем номер видео и убираем ведущий ноль
+    video_number=$(echo "${last_video_name##*-}" | sed 's/^0*//')
+    
+    next_video_name=$(printf "%s-%02d\n" ${last_video_name%-*} $((video_number + 1)))
+    # echo $last_video $last_video_name $next_video_name ${last_video_name%-*} ${last_video_name##*-} #>> "${FILENAME_ONLY}.log"
+    
+    # Cutting
+    ffmpeg -i "${FILENAME_ONLY}.${EXT_ONLY}" -map 0 -c copy -copyinkf -ss "$start" -to "$end" "${next_video_name}.${EXT_ONLY}"
+done

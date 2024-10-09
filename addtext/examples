@@ -1,0 +1,27 @@
+- 1 -
+Пробуем добавить текст в видео. Чтобы текст был контрастным, можнопо пробовать наложить один и тот же текст но разным размером и разным текстом. Должна получиться как бы обводка.
+
+ffmpeg -i 001.mp4 -vf "drawtext=text='My Text':enable='between(t,5,10)': x=(w-text_h)/2: y=(h-text_h)/2: fontsize=32: fontcolor=white: box=1: boxborderw=5:" -c:a copy output.mp4
+# появилась рамка на пятой секунде, но текста не видно. 
+
+Попробую убрать рамку
+ffmpeg -y -i 001.mp4 -vf "drawtext=text='My Text':enable='between(t,1,5)': x=(w-text_h)/2: y=(h-text_h)/2: fontsize=32: fontcolor=white:" -t 5 -c:a copy output_01.mp4
+# на второй секунде появился белый текст
+
+Пробуем наложить один текст на другой
+ffmpeg -y -i 001.mp4 -vf "drawtext=text='My Text':enable='between(t,1,5)': x=(w-text_h)/2: y=(h-text_h)/2: fontsize=26: fontcolor=white:","drawtext=text='My Text':enable='between(t,1,5)': x=(w-text_h)/2: y=(h-text_h)/2: fontsize=32: fontcolor=black:" -t 5 -c:a copy output_02.mp4
+# Получилось, но текст с разным размером печатается в одной начальной строчке, а ожидалось, что у разных текстов будет один общий центр. 
+
+Поместим текст в низ и центр
+ffmpeg -y -i 001.mp4 -vf "drawtext=text='My Text':enable='between(t,1,5)': x=(w-text_w)/2:y=h-th: fontsize=26: fontcolor=white:","drawtext=text='My Text':enable='between(t,1,5)': x=(w-text_w)/2:y=h-th: fontsize=32: fontcolor=black:" -t 5 -c:a copy output_02.mp4
+# так тоже не получилось
+
+Пробуем обводку через переметры фильтра drawtext
+ffmpeg -y -i 001.mp4 -vf "drawtext=text='My Text': x=(w-text_w)/2:y=h-th: fontsize=26: fontcolor=white:borderw=4:bordercolor=black:" -t 5 -c:a copy output_02.mp4
+# получилось идеально !!!!
+
+- 2 -
+Пробуем субтитры
+ffmpeg -y -i 001.mp4 -vf "subtitles='001.srt'" -c:a copy output_03.mp4
+# Получилось суперски идеально !!!!
+

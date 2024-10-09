@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Arguments
+FILE_RAW=$1
+
+# Prepare variables
+BASE_PATH=$(dirname $(readlink -f $FILE_RAW))
+FILENAME_EXT="$(basename "${FILE_RAW}")"
+FILENAME_ONLY="${FILENAME_EXT%.*}"
+EXT_ONLY="${FILENAME_EXT#*.}" # Or hardcode it like "mp4"
+FILENAME_ONLY_PATH="${BASE_PATH}/${FILENAME_ONLY}"
+
+# Convert to mp4 for WhatsApp
+ffmpeg -i "${FILENAME_ONLY}.${EXT_ONLY}" -c:v libx264 -profile:v baseline -level 3.0 -pix_fmt yuv420p "${FILENAME_ONLY}_wa.mp4"
+
+# Beeping
+echo -e "\a"
+sleep 0.3
+echo -e "\a"
+sleep 0.3
+echo -e "\a"
